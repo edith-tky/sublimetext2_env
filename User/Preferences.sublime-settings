@@ -1,0 +1,24 @@
+{
+	"caret_style": "wide",
+	"draw_minimap_border": true,
+	"draw_white_space": "all",
+	"font_face": "Migu 1M",
+	"font_options":
+	[
+		"directwrite"
+	],
+	"font_size": 12,
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"line_numbers": true,
+	"rulers":
+	[
+		80, 120
+	],
+	"scroll_past_end": true,
+	"tab_size": 4,
+	"word_wrap": true,
+	"trim_automatic_white_space": false
+}
