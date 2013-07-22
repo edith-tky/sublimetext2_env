@@ -1,0 +1,70 @@
+[
+	//--------------------------------------------------------------------------
+	// テスト
+	//--------------------------------------------------------------------------
+	// { "keys": ["alt+enter"], "command": "test" },
+	
+	//--------------------------------------------------------------------------
+	// タブコントロール
+	//--------------------------------------------------------------------------
+	
+	// グループ内でのみタブ切り替え。
+	{ "keys": ["ctrl+tab"], "command": "change_view_same_group", "args": { "order": "next" } },
+	{ "keys": ["ctrl+shift+tab"], "command": "change_view_same_group", "args": { "order": "prev" } },
+	
+	{ "keys": ["ctrl+pagedown"], "command": "next_view_in_stack" },
+	{ "keys": ["ctrl+pageup"], "command": "prev_view_in_stack" },
+	
+	// グループ間移動。
+	{ "keys": ["ctrl+alt+left"], "command": "move_to_group", "args": { "group": 0 } },
+	{ "keys": ["ctrl+alt+right"], "command": "move_to_group", "args": { "group": 1 } },
+	
+	// タブを閉じると左隣りにフォーカスを移す。
+	{ "keys": ["ctrl+f4"], "command": "close_view_to_focus_left_view" },
+	
+	//--------------------------------------------------------------------------
+	// カーソル移動系
+	//--------------------------------------------------------------------------
+	
+	// 上下左右。
+	{ "keys": ["ctrl+h"], "command": "move", "args": {"by": "characters", "forward": false} },
+	{ "keys": ["ctrl+l"], "command": "move", "args": {"by": "characters", "forward": true} },
+	{ "keys": ["ctrl+k"], "command": "move", "args": {"by": "lines", "forward": false} },
+	{ "keys": ["ctrl+j"], "command": "move", "args": {"by": "lines", "forward": true} },
+	{ "keys": ["ctrl+shift+h"], "command": "move", "args": {"by": "characters", "forward": false, "extend": true} },
+	{ "keys": ["ctrl+shift+l"], "command": "move", "args": {"by": "characters", "forward": true, "extend": true} },
+	{ "keys": ["ctrl+shift+k"], "command": "move", "args": {"by": "lines", "forward": false, "extend": true} },
+	{ "keys": ["ctrl+shift+j"], "command": "move", "args": {"by": "lines", "forward": true, "extend": true} },
+	
+	// 単語区切り
+	{ "keys": ["ctrl+,"], "command": "move", "args": {"by": "words", "forward": false} },
+	{ "keys": ["ctrl+."], "command": "move", "args": {"by": "word_ends", "forward": true} },
+	{ "keys": ["ctrl+shift+,"], "command": "move", "args": {"by": "words", "forward": false, "extend": true} },
+	{ "keys": ["ctrl+shift+."], "command": "move", "args": {"by": "word_ends", "forward": true, "extend": true} },
+	
+	//--------------------------------------------------------------------------
+	// 入力支援
+	//--------------------------------------------------------------------------
+	
+	// 置換（上下左右で競合したので退避）
+	{ "keys": ["ctrl+r"], "command": "show_panel", "args": {"panel": "replace"} },
+	{ "keys": ["ctrl+shift+r"], "command": "replace_next" },
+	
+	// コマンドリスト（置換と競合したので退避）
+	{ "keys": ["f11"], "command": "show_overlay", "args": {"overlay": "goto", "text": "@"} },
+	
+	// 単語補完の候補を google IME ライクにする。
+	{ "keys": ["tab"], "command": "auto_complete", "context":
+		[
+			{ "key": "auto_complete_visible", "operator": "equal", "operand": true }
+		]
+	},
+	{ "keys": ["shift+tab"], "command": "auto_complete_prev", "context":
+		[
+			{ "key": "auto_complete_visible", "operator": "equal", "operand": true }
+		]
+	},
+	
+	// ダミー
+	{}
+]
