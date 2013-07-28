@@ -21,6 +21,8 @@ class CloseViewToFocusLeftViewCommand(sublime_plugin.WindowCommand):
 			nextIndex = 0
 		
 		myWindow.run_command( "close_file" )
-		myWindow.focus_view( sameGroupViews[nextIndex] )
+		confirm = myWindow.get_view_index( myView )
+		if confirm[0] < 0:
+			myWindow.focus_view( sameGroupViews[nextIndex] )
 		
 		
