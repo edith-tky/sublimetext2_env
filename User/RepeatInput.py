@@ -13,7 +13,6 @@ class RepeatInputCommand(sublime_plugin.WindowCommand):
 		view = sublime.active_window().active_view()
 		view.set_status( "repeat_input_message", str )
 		sublime.set_timeout( self.eraseErrorMessage, 2500 )
-		# print str
 		
 	
 	def showInputPanel_onDone( self, str ):
