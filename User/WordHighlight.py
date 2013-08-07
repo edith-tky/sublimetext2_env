@@ -12,6 +12,10 @@ class WordHighlightTestCommand(sublime_plugin.TextCommand):
 
 class WordHighlight(sublime_plugin.EventListener):
 	
+	def eraseHighlight( self, view ):
+		view.erase_regions( "word_highlight" )
+		view.erase_regions( "word_highlight_original" )
+	
 	def on_selection_modified( self, view ):
 		
 		window = sublime.active_window()
@@ -22,27 +26,59 @@ class WordHighlight(sublime_plugin.EventListener):
 		if view is None:
 			return
 		
-		highlightWord = view.substr( view.sel()[0].a )
+		if not view.settings().has( "word_highlight_enabled" ):
+			self.eraseHighlight( view )
+			return
+		
+		
+		baseRegion = view.sel()[0]
+		highlightWord = view.substr( baseRegion.a )
 		wordSeparator = view.settings().get( "word_separators" )
 		
-		if not highlightWord in wordSeparator or highlightWord in "<>=+-*/%~^" :
+		if highlightWord not in wordSeparator or highlightWord in "<>=+-*/%~^" :
 			
-			highlightWord = view.substr( view.word( view.sel()[0].a ) )
+			baseRegion = view.word( view.sel()[0].a )
+			highlightWord = view.substr( baseRegion )
 			highlightWord = highlightWord.lstrip().rstrip()
 			
 		
+		
 		if len(highlightWord) <= 0:
-			view.erase_regions( "word_highlight" )
+			self.eraseHighlight( view )
 			return
 			
-		wordRegions = view.find_all( highlightWord, sublime.LITERAL )
+		wordRegions = []
+		if len(highlightWord) == 1:
+			
+			if highlightWord not in "<>":
+				escaped = re.escape( highlightWord )
+				patern = escaped + "+"
+			else:
+				patern = highlightWord + "+"
+			
+			wordRegions = view.find_all( patern )
+			
+		else:
+			wordRegions = view.find_all( highlightWord, sublime.LITERAL )
 		
 		if len(wordRegions) <= 0:
-			view.erase_regions( "word_highlight" )
+			self.eraseHighlight( view )
 			return
-		
+		# ...
 		# print wordRegions
-		view.add_regions( "word_highlight", wordRegions, "invalid", "", sublime.DRAW_OUTLINED )
+		highlight_color = ""
+		if view.settings().has( "word_highlight_color_score" ):
+			highlight_color = view.settings().get( "word_highlight_color_score" )
+		
+		# print highlight_color
+		view.add_regions( "word_highlight", wordRegions, highlight_color, "", sublime.DRAW_OUTLINED )
+		
+		if view.settings().has( "word_highlight_original_color_score" ):
+			original_color = view.settings().get( "word_highlight_original_color_score" )
+			
+			reg = view.find( highlightWord, baseRegion.a, sublime.LITERAL )
+			view.add_regions( "word_highlight_original", [reg], original_color, "", sublime.DRAW_OUTLINED )
+			
 		
 		return
 	
