@@ -35,7 +35,7 @@ class WordHighlight(sublime_plugin.EventListener):
 		highlightWord = view.substr( baseRegion.a )
 		wordSeparator = view.settings().get( "word_separators" )
 		
-		if highlightWord not in wordSeparator or highlightWord in "<>=+-*/%~^" :
+		if highlightWord not in wordSeparator or highlightWord in "<>=+-*/%~^.," :
 			
 			baseRegion = view.word( view.sel()[0].a )
 			highlightWord = view.substr( baseRegion )
@@ -64,7 +64,18 @@ class WordHighlight(sublime_plugin.EventListener):
 		if len(wordRegions) <= 0:
 			self.eraseHighlight( view )
 			return
-		# ...
+		
+		# in caret.
+		if view.settings().has( "word_highlight_original_color_scope" ):
+			original_color = view.settings().get( "word_highlight_original_color_scope" )
+			
+			reg = view.find( highlightWord, baseRegion.a, sublime.LITERAL )
+			view.add_regions( "word_highlight_original", [reg], original_color, "", sublime.DRAW_OUTLINED )
+			
+			if reg in wordRegions:
+				wordRegions.remove( reg )
+			
+		
 		# print wordRegions
 		highlight_color = ""
 		if view.settings().has( "word_highlight_color_scope" ):
@@ -73,11 +84,6 @@ class WordHighlight(sublime_plugin.EventListener):
 		# print highlight_color
 		view.add_regions( "word_highlight", wordRegions, highlight_color, "", sublime.DRAW_OUTLINED )
 		
-		if view.settings().has( "word_highlight_original_color_scope" ):
-			original_color = view.settings().get( "word_highlight_original_color_scope" )
-			
-			reg = view.find( highlightWord, baseRegion.a, sublime.LITERAL )
-			view.add_regions( "word_highlight_original", [reg], original_color, "", sublime.DRAW_OUTLINED )
 			
 		
 		return
