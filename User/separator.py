@@ -3,6 +3,7 @@
 import sublime, sublime_plugin
 import re
 import sys
+import unicodedata
 
 # for import comment.
 defaultPath = sublime.packages_path() + "\Default"
@@ -12,6 +13,19 @@ if sys.path.count( defaultPath ) == 0:
 import comment
 
 
+
+def count_zenkaku( u_str ):
+	
+	count = 0
+	for char in u_str:
+		wide_charas = u"WFA"
+		eaw = unicodedata.east_asian_width(char)
+		if wide_charas.find( eaw ) >= 0:
+			count += 1
+	
+	return count
+	
+
 class SeparatorCommand(sublime_plugin.WindowCommand):
 	
 	
@@ -19,6 +33,7 @@ class SeparatorCommand(sublime_plugin.WindowCommand):
 		
 		ret = ["-"]
 		
+		#-----------------------------------------------------------------------
 		view = sublime.active_window().active_view() if sublime.active_window() else None
 		if view is None:
 			return ret
@@ -38,9 +53,11 @@ class SeparatorCommand(sublime_plugin.WindowCommand):
 		view = sublime.active_window().active_view()
 		
 		global comment
+		lineComment = "//"
 		line_comments = comment.build_comment_data( view, view.sel()[0].a )[0]
+		if len(line_comments) > 0:
+			lineComment = line_comments[0][0].strip()
 		
-		lineComment = line_comments[0][0].strip()
 		ret = []
 		separatorTypes = self.getSeparatorTypes()
 		for i in range( 0, len( separatorTypes ) ):
@@ -132,18 +149,22 @@ class SeparatorCommand(sublime_plugin.WindowCommand):
 						tab = tabSize
 			
 			global comment
+			commentLength = 2
 			line_comments = comment.build_comment_data( view, view.sel()[0].a )[0]
-			commentLength = len( line_comments[0][0].strip() )
+			if len(line_comments) > 0:
+				commentLength = len( line_comments[0][0].strip() )
 			
 			separatorLength = 80
 			if view.settings().has( "separator_length" ):
 				separatorLength = view.settings().get( "separator_length" )
 				
-			lengthRate = 1.0
-			if len( self.getSeparatorTypes()[separatorTypeIndex].encode( "UTF-8" ) ) > 1:
-				lengthRate = 0.5
+			expandLength = separatorLength - commentLength - indentLength
 			
-			separators = self.makeSeparator( int( ( separatorLength - commentLength - indentLength ) * lengthRate ) )
+			separatorMultiByteCount = count_zenkaku( self.getSeparatorTypes()[separatorTypeIndex].decode( "utf-8" ) )
+			separatorSingleByteCount = len( self.getSeparatorTypes()[separatorTypeIndex].decode( "UTF-8" ) ) - separatorMultiByteCount
+			separatorDefineLength = separatorMultiByteCount * 2 + separatorSingleByteCount
+			
+			separators = self.makeSeparator( expandLength / separatorDefineLength )
 			
 			addString = separators[separatorTypeIndex] + "\n" + indentString
 			
